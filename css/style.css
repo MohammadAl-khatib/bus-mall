@@ -1,0 +1,47 @@
+*{
+    box-sizing: border-box;
+}
+body{
+    width:960px;
+    margin: auto;
+    background-color: violet;
+}
+img{
+    width: 300px;
+    height: 300px;
+}
+header{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600px;
+    font-size: 25px;
+    margin: 40px 0;
+    background-color: black;
+    color: white;
+    height: 50px;
+}
+#secondImage {
+    padding: 0 15px;
+}
+section main p {
+    font-weight: 400;
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+section main li{
+    list-style-type: disc;
+    margin-left: 30px;
+    line-height: 20px;
+}
+form{
+    margin: 25px 0;
+}
+ul{
+    columns: 100px 3;
+}
+form p{
+    display: inline;
+    color: white;
+    font-style: italic;
+}
