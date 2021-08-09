@@ -9,11 +9,51 @@ let secondImage = document.getElementById('secondImage');
 let thirdImage = document.getElementById('thirdImage');
 let viewResults = document.getElementById('viewResults');
 let resultsList = document.getElementById('resultsList');
+let voteArr = [];
+let shownArr = [];
 
 function getRandom(min, max) {
 
     let result = Math.floor(Math.random() * (max - min + 1) + min);
     return result;
+}
+function creatChart() {
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: imageNames,
+            datasets: [{
+                label: '# of Votes',
+                data: voteArr,
+                backgroundColor: [
+                    `rgb(0, 153, 255)`
+                ],
+                borderColor: [
+                    `rgb(0, 255, 0)`
+                ],
+                borderWidth: 1
+            },
+            {
+                label: '# shown',
+                data: shownArr,
+                backgroundColor: [
+                    `rgb(255, 204, 0)`
+                ],
+                borderColor: [
+                    `rgb(0, 51, 102)`
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
 }
 
 function ImgObject(imgName, imgSrc) {
@@ -23,32 +63,29 @@ function ImgObject(imgName, imgSrc) {
     this.numShown = 0;
     this.votes = 0;
     ImgObject.objArray.push(this);
-
 }
 
 ImgObject.objArray = [];
 
-letx = 0;
-lety = 0;
-letz = 0;
+let firstRandom = 0;
+let secondRandom = 0;
+let thirdRandom = 0;
+let firstRandomSave = 20;
+let secondRandomSave = 20;
+let thirdRandomSave = 20;
+
 function render() {
 
-    let firstRandom = getRandom(0, ImgObject.objArray.length - 1)
-    let secondRandom = getRandom(0, ImgObject.objArray.length - 1)
-    let thirdRandom = getRandom(0, ImgObject.objArray.length - 1)
-
-    while (firstRandom === secondRandom || firstRandom === thirdRandom || secondRandom === thirdRandom) {
+    do {
         firstRandom = getRandom(0, ImgObject.objArray.length - 1)
         secondRandom = getRandom(0, ImgObject.objArray.length - 1)
         thirdRandom = getRandom(0, ImgObject.objArray.length - 1)
     }
+    while (firstRandom === secondRandom || firstRandom === thirdRandom || secondRandom === thirdRandom || firstRandom === firstRandomSave || firstRandom === secondRandomSave || firstRandom === thirdRandomSave || secondRandom === firstRandomSave || secondRandom === secondRandomSave || secondRandom === thirdRandomSave || thirdRandom === firstRandomSave || thirdRandom === secondRandomSave || thirdRandom === thirdRandomSave)
+
     firstImage.src = './img/' + ImgObject.objArray[firstRandom].imgSrc;
     secondImage.src = './img/' + ImgObject.objArray[secondRandom].imgSrc;
     thirdImage.src = './img/' + ImgObject.objArray[thirdRandom].imgSrc;
-
-    x = firstRandom;
-    y = secondRandom;
-    z = thirdRandom;
 
     ImgObject.objArray[firstRandom].numShown++;
     ImgObject.objArray[secondRandom].numShown++;
@@ -58,21 +95,31 @@ function render() {
 for (let i = 0; i < imageNames.length; i++) {
     let newImg = new ImgObject(imageNames[i].split('.')[0], imageNames[i]);
 }
-console.log(ImgObject.objArray);
 
 render();
 
 imgSection.addEventListener('click', clickListener);
 function clickListener(eventHolder) {
     if ((eventHolder.target.id === 'firstImage' || eventHolder.target.id === 'secondImage' || eventHolder.target.id === 'thirdImage') && numClicked < numClickedLimit) {
-        if (eventHolder.target.id === 'firstImage') { ImgObject.objArray[x].votes++ };
-        if (eventHolder.target.id === 'secondImage') { ImgObject.objArray[y].votes++ };
-        if (eventHolder.target.id === 'thirdImage') { ImgObject.objArray[z].votes++ };
+        if (eventHolder.target.id === 'firstImage') { ImgObject.objArray[firstRandom].votes++ };
+        if (eventHolder.target.id === 'secondImage') { ImgObject.objArray[secondRandom].votes++ };
+        if (eventHolder.target.id === 'thirdImage') { ImgObject.objArray[thirdRandom].votes++ };
         render();
         numClicked++;
+        console.log(firstRandomSave, secondRandomSave, thirdRandomSave, firstRandom, secondRandom, thirdRandom);
+        firstRandomSave = firstRandom;
+        secondRandomSave = secondRandom;
+        thirdRandomSave = thirdRandom;
+
     }
     if (numClicked === 25) {
+        for (let i = 0; i < ImgObject.objArray.length; i++) {
+            voteArr.push(ImgObject.objArray[i].votes)
+            shownArr.push(ImgObject.objArray[i].numShown)
+        }
+        creatChart();
         imgSection.removeEventListener('click', clickListener);
+
 
         viewResults.addEventListener('click', viewListener);
         function viewListener() {
