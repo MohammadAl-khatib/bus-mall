@@ -56,12 +56,12 @@ function creatChart() {
     });
 }
 
-function ImgObject(imgName, imgSrc) {
+function ImgObject(imgName, imgSrc,numShown=0, votes=0) {
 
     this.imgName = imgName;
     this.imgSrc = imgSrc;
-    this.numShown = 0;
-    this.votes = 0;
+    this.numShown = numShown;
+    this.votes = votes;
     ImgObject.objArray.push(this);
 }
 
@@ -87,13 +87,22 @@ function render() {
     secondImage.src = './img/' + ImgObject.objArray[secondRandom].imgSrc;
     thirdImage.src = './img/' + ImgObject.objArray[thirdRandom].imgSrc;
 
+    localStorage.places = JSON.stringify(ImgObject.objArray);
+
     ImgObject.objArray[firstRandom].numShown++;
     ImgObject.objArray[secondRandom].numShown++;
     ImgObject.objArray[thirdRandom].numShown++;
 }
+if (localStorage.places){       // local storage
+            let saveData = JSON.parse(localStorage.places);
+            for(i=0;i<saveData.length;i++){
+                new ImgObject (saveData[i].imgName,saveData[i].imgSrc,saveData[i].numShown,saveData[i].votes)
+            }
+}else{
 
-for (let i = 0; i < imageNames.length; i++) {
-    let newImg = new ImgObject(imageNames[i].split('.')[0], imageNames[i]);
+    for (let i = 0; i < imageNames.length; i++) {
+        let newImg = new ImgObject(imageNames[i].split('.')[0], imageNames[i]);
+    }
 }
 
 render();
@@ -106,11 +115,9 @@ function clickListener(eventHolder) {
         if (eventHolder.target.id === 'thirdImage') { ImgObject.objArray[thirdRandom].votes++ };
         render();
         numClicked++;
-        console.log(firstRandomSave, secondRandomSave, thirdRandomSave, firstRandom, secondRandom, thirdRandom);
         firstRandomSave = firstRandom;
         secondRandomSave = secondRandom;
         thirdRandomSave = thirdRandom;
-
     }
     if (numClicked === 25) {
         for (let i = 0; i < ImgObject.objArray.length; i++) {
